@@ -9,12 +9,13 @@ use crate::entity::book::Book;
 use crate::service::book_service::BookService;
 
 pub async fn create_app() -> Router {
-    let db = Db::default();
+    let db = Db::new(RwLock::new(HashMap::new()));
 
     Router::new()
         .route("/", get(hello))
         .route("/health", get(health))
         .route("/books", post(BookService::create_book).get(BookService::get_books))
+        .route("/books/:id", get(BookService::get_book))
         .layer(CorsLayer::new().allow_origin(Any))
         .with_state(db)
 }
