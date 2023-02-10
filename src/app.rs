@@ -14,8 +14,8 @@ pub async fn create_app() -> Router {
     Router::new()
         .route("/", get(hello))
         .route("/health", get(health))
-        .route("/books", post(BookService::create_book).get(BookService::get_books))
-        .route("/books/:id", get(BookService::get_book))
+        .route("/books", post(BookService::create).get(BookService::get_all))
+        .route("/books/:id", get(BookService::get).delete(BookService::delete).put(BookService::update))
         .layer(CorsLayer::new().allow_origin(Any))
         .with_state(db)
 }
