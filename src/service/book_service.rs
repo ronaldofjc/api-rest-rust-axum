@@ -1,4 +1,4 @@
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::Json;
 use chrono::{Local};
 use uuid::Uuid;
@@ -36,6 +36,16 @@ impl BookService {
         let result = books.values().cloned().collect::<Vec<Book>>();
         tracing_result(result.len());
         Ok(Json(result))
+    }
+
+    pub async fn get_book(State(db): State<Db>, Path(id): Path<Uuid>) -> Result<Json<Book>, AppError> {
+        tracing::info!("Get book by id {}", &id);
+        let books = db.read().unwrap();
+        let book = books.get(&id);
+        match book {
+            None => Err(AppError::NotFound),
+            Some(book) => Ok(Json(book.clone()))
+        }
     }
 }
 

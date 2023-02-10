@@ -7,11 +7,13 @@ use crate::entity::error::Error;
 #[derive(Debug, Serialize, Deserialize)]
 pub enum AppError {
     InvalidParams,
-    InternalServerError
+    InternalServerError,
+    NotFound
 }
 
 const INVALID_PARAMS_MSG: &str = "Invalid params on request";
 const SERVER_ERROR_MSG: &str = "an internal server error occurred";
+const NOT_FOUND_MSG: &str = "book not found";
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
@@ -23,6 +25,10 @@ impl IntoResponse for AppError {
             Self::InvalidParams => {
                 tracing::warn!("{}", INVALID_PARAMS_MSG);
                 (StatusCode::BAD_REQUEST, INVALID_PARAMS_MSG)
+            },
+            Self::NotFound => {
+                tracing::info!("{}", NOT_FOUND_MSG);
+                (StatusCode::NOT_FOUND, NOT_FOUND_MSG)
             }
         };
         (status, Json(json!(Error::new(err_msg.to_string(), status.to_string())))).into_response()
