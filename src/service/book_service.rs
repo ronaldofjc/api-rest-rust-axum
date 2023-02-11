@@ -66,7 +66,6 @@ impl BookService {
             return Err(AppError::InvalidParams);
         }
 
-        //let books = db.read().unwrap();
         let mut book = db.read().unwrap()
             .get(&id)
             .cloned()
