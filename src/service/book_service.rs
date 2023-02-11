@@ -14,7 +14,7 @@ pub struct BookService {}
 
 impl BookService {
     pub async fn create(State(db): State<Db>, payload: Json<CreateBook>) -> Result<Json<Book>, AppError> {
-        tracing::info!("request create user endpoint!");
+        tracing::info!("Endpoint: create user!");
         if has_invalid_params_on_create(payload.clone()) {
             return Err(AppError::InvalidParams);
         }
@@ -34,7 +34,7 @@ impl BookService {
     }
 
     pub async fn get_all(State(db): State<Db>) -> Result<Json<Vec<Book>>, AppError> {
-        tracing::info!("Request get all books endpoint!");
+        tracing::info!("Endpoint: Get all books!");
         let books = db.read().unwrap();
         let result = books.values().cloned().collect::<Vec<Book>>();
         tracing_result(result.len());
@@ -42,7 +42,7 @@ impl BookService {
     }
 
     pub async fn get(State(db): State<Db>, Path(id): Path<Uuid>) -> Result<Json<Book>, AppError> {
-        tracing::info!("Get book by id {}", &id);
+        tracing::info!("Endpoint: Get book by id {}", &id);
         let books = db.read().unwrap();
         let book = books.get(&id);
         match book {
@@ -52,7 +52,7 @@ impl BookService {
     }
 
     pub async fn delete(State(db): State<Db>, Path(id): Path<Uuid>) -> Result<impl IntoResponse, AppError> {
-        tracing::info!("Delete book by id {}", &id);
+        tracing::info!("Endpoint: Delete book by id {}", &id);
         if db.write().unwrap().remove(&id).is_some() {
             Ok(StatusCode::NO_CONTENT)
         } else {
@@ -61,7 +61,7 @@ impl BookService {
     }
 
     pub async fn update(State(db): State<Db>, Path(id): Path<Uuid>, Json(payload): Json<UpdateBook>) -> Result<Json<Book>, AppError> {
-        tracing::info!("Update book by id {}", &id);
+        tracing::info!("Endpoint: Update book by id {}", &id);
         if has_invalid_params_on_update(payload.clone()) {
             return Err(AppError::InvalidParams);
         }
@@ -79,7 +79,6 @@ impl BookService {
 
             db.write().unwrap().insert(book.id, book.clone());
             Ok(Json(book))
-
     }
 }
 
