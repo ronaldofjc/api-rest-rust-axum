@@ -9,6 +9,7 @@ use crate::entity::book::Book;
 use crate::service::book_service::BookService;
 
 pub async fn create_app() -> Router {
+
     let db = Db::new(RwLock::new(HashMap::new()));
 
     Router::new()

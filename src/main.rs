@@ -23,6 +23,39 @@ async fn main() {
         .expect("failed to start server");
 }
 
+#[cfg(test)]
+mod tests {
+    use axum::http::StatusCode;
+    use axum_test_helper::TestClient;
+    use crate::app::create_app;
+
+    #[tokio::test]
+    async fn test_hello_router() {
+        let router = create_app().await;
+        let client = TestClient::new(router);
+        let res = client.get("/").send().await;
+        assert_eq!(res.status(), StatusCode::OK);
+        assert_eq!(res.text().await, "{\"message\":\"API Rust with Axum is working!!!\"}");
+    }
+
+    #[tokio::test]
+    async fn test_health_router() {
+        let router = create_app().await;
+        let client = TestClient::new(router);
+        let res = client.get("/health").send().await;
+        assert_eq!(res.status(), StatusCode::OK);
+        assert_eq!(res.text().await, "{\"status\":\"UP\"}");
+    }
+
+    #[tokio::test]
+    async fn test_get_all_books_router() {
+        let router = create_app().await;
+        let client = TestClient::new(router);
+        let res = client.get("/books").send().await;
+        assert_eq!(res.status(), StatusCode::OK);
+        assert_eq!(res.text().await, "[]");
+    }
+}
 
 
 
