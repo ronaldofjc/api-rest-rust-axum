@@ -14,7 +14,7 @@ pub struct BookService {}
 
 impl BookService {
     pub async fn create(State(db): State<Db>, payload: Json<CreateBook>) -> Result<Json<Book>, AppError> {
-        tracing::info!("Endpoint: create user!");
+        tracing::info!("endpoint: create user!");
         if has_invalid_params_on_create(payload.clone()) {
             return Err(AppError::InvalidParams);
         }
@@ -29,12 +29,12 @@ impl BookService {
         };
 
         db.write().unwrap().insert(book.id, book.clone());
-        tracing::info!("Book with title: [{}] is created. ID: [{}]!", book.title, book.id);
+        tracing::info!("book with title: [{}] is created. ID: [{}]!", book.title, book.id);
         Ok(Json(book))
     }
 
     pub async fn get_all(State(db): State<Db>) -> Result<Json<Vec<Book>>, AppError> {
-        tracing::info!("Endpoint: Get all books!");
+        tracing::info!("endpoint: get all books!");
         let books = db.read().unwrap();
         let result = books.values().cloned().collect::<Vec<Book>>();
         tracing_result(result.len());
@@ -42,7 +42,7 @@ impl BookService {
     }
 
     pub async fn get(State(db): State<Db>, Path(id): Path<Uuid>) -> Result<Json<Book>, AppError> {
-        tracing::info!("Endpoint: Get book by id {}", &id);
+        tracing::info!("endpoint: get book by id {}", &id);
         let books = db.read().unwrap();
         let book = books.get(&id);
         match book {
@@ -52,7 +52,7 @@ impl BookService {
     }
 
     pub async fn delete(State(db): State<Db>, Path(id): Path<Uuid>) -> Result<impl IntoResponse, AppError> {
-        tracing::info!("Endpoint: Delete book by id {}", &id);
+        tracing::info!("endpoint: delete book by id {}", &id);
         if db.write().unwrap().remove(&id).is_some() {
             Ok(StatusCode::NO_CONTENT)
         } else {
@@ -61,7 +61,7 @@ impl BookService {
     }
 
     pub async fn update(State(db): State<Db>, Path(id): Path<Uuid>, Json(payload): Json<UpdateBook>) -> Result<Json<Book>, AppError> {
-        tracing::info!("Endpoint: Update book by id {}", &id);
+        tracing::info!("endpoint: update book by id {}", &id);
         if has_invalid_params_on_update(payload.clone()) {
             return Err(AppError::InvalidParams);
         }
