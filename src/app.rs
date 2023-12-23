@@ -15,6 +15,7 @@ pub async fn create_app() -> Router {
     Router::new()
         .route("/", get(hello))
         .route("/health", get(health))
+        .route("/ping", get(ping))
         .route("/books", post(BookService::create).get(BookService::get_all))
         .route("/books/:id", get(BookService::get).delete(BookService::delete).put(BookService::update))
         .layer(CorsLayer::new().allow_origin(Any))
@@ -24,11 +25,16 @@ pub async fn create_app() -> Router {
 pub type Db = Arc<RwLock<HashMap<Uuid, Book>>>;
 
 async fn hello() -> Json<Value> {
-    tracing::info!("Request Hello Endpoint!");
+    tracing::info!("request hello endpoint!");
     Json(json!({ "message": "API Rust with Axum is working!!!" }))
 }
 
 async fn health() -> Json<Value> {
-    tracing::info!("Request Health Endpoint!");
+    tracing::info!("request health endpoint!");
     Json(json!({ "status":"UP" }))
+}
+
+async fn ping() -> Json<Value> {
+    tracing::info!("request ping endpoint!");
+    Json(json!({ "message":"pong" }))
 }
