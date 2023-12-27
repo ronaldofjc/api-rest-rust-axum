@@ -15,12 +15,9 @@ async fn main() {
 
     let app = app::create_app().await;
 
-    let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 8090));
-    tracing::info!("Listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .expect("failed to start server");
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8090").await.unwrap();
+    tracing::info!("Listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap();
 }
 
 #[cfg(test)]
