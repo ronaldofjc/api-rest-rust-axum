@@ -24,17 +24,17 @@ pub async fn create_app() -> Router {
 
 pub type Db = Arc<RwLock<HashMap<Uuid, Book>>>;
 
-async fn hello() -> Json<Value> {
+pub async fn hello() -> Json<Value> {
     tracing::info!("request hello endpoint!");
     Json(json!({ "message": "API Rust with Axum is working!!!" }))
 }
 
-async fn health() -> Json<Value> {
+pub async fn health() -> Json<Value> {
     tracing::info!("request health endpoint!");
     Json(json!({ "status":"UP" }))
 }
 
-async fn ping() -> Json<Value> {
+pub async fn ping() -> Json<Value> {
     tracing::info!("request ping endpoint!");
     Json(json!({ "message":"pong" }))
 }

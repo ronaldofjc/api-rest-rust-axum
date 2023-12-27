@@ -15,4 +15,4 @@ uuid = { version = "1.6.1", features = ["serde", "v4"] }
 chrono = { version = "0.4", features = ["serde"] }
 
 [dev-dependencies]
-axum-test-helper = { version = "0.*" }
+axum-test = "14.0.0"
