@@ -23,34 +23,34 @@ async fn main() {
 #[cfg(test)]
 mod tests {
     use axum::http::StatusCode;
-    use axum_test_helper::TestClient;
+    use axum_test::TestServer;
     use crate::app::create_app;
 
     #[tokio::test]
     async fn test_hello_router() {
-        let router = create_app().await;
-        let client = TestClient::new(router);
-        let res = client.get("/").send().await;
-        assert_eq!(res.status(), StatusCode::OK);
-        assert_eq!(res.text().await, "{\"message\":\"API Rust with Axum is working!!!\"}");
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let res = server.get("/").await;
+        assert_eq!(res.status_code(), StatusCode::OK);
+        assert_eq!(res.text(), "{\"message\":\"API Rust with Axum is working!!!\"}");
     }
 
     #[tokio::test]
     async fn test_health_router() {
-        let router = create_app().await;
-        let client = TestClient::new(router);
-        let res = client.get("/health").send().await;
-        assert_eq!(res.status(), StatusCode::OK);
-        assert_eq!(res.text().await, "{\"status\":\"UP\"}");
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let res = server.get("/health").await;
+        assert_eq!(res.status_code(), StatusCode::OK);
+        assert_eq!(res.text(), "{\"status\":\"UP\"}");
     }
 
     #[tokio::test]
     async fn test_get_all_books_router() {
-        let router = create_app().await;
-        let client = TestClient::new(router);
-        let res = client.get("/books").send().await;
-        assert_eq!(res.status(), StatusCode::OK);
-        assert_eq!(res.text().await, "[]");
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let res = server.get("/books").await;
+        assert_eq!(res.status_code(), StatusCode::OK);
+        assert_eq!(res.text(), "[]");
     }
 }
 
