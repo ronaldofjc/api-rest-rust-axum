@@ -26,6 +26,7 @@ mod tests {
     use axum_test::TestServer;
     use serde_json::json;
     use crate::app::create_app;
+    use crate::entity::book::Book;
 
     #[tokio::test]
     async fn test_hello_router() {
@@ -88,6 +89,26 @@ mod tests {
             })).await;
         assert_eq!(res.status_code(), StatusCode::BAD_REQUEST);
         assert!(res.text().contains("\"message\":\"Invalid params on request\""));
+    }
+
+    #[tokio::test]
+    async fn test_get_book_by_id_with_success_router() {
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let _ = server.post("/books")
+            .json(&json!({
+                "title": "Lord of the Rings",
+                "author": "Tolkien",
+                "pages": 2000,
+            })).await;
+
+        let books = server.get("/books").await.json::<Vec<Book>>();
+        let id = books[0].id;
+        let url = "/books/".to_string() + &*id.to_string();
+        let res = server.get(&*url).await;
+
+        assert_eq!(res.status_code(), StatusCode::OK);
+        assert!(res.text().contains("\"title\":\"Lord of the Rings\""));
     }
 }
 

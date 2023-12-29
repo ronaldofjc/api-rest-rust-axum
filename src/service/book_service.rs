@@ -56,7 +56,7 @@ impl BookService {
         match book {
             None => AppError::NotFound.into_response(),
             Some(book) => Response::builder()
-                .status(StatusCode::CREATED)
+                .status(StatusCode::OK)
                 .body(Json(book.clone()).into_response())
                 .unwrap()
                 .into_response()
