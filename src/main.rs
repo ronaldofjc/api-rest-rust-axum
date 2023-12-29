@@ -24,6 +24,7 @@ async fn main() {
 mod tests {
     use axum::http::StatusCode;
     use axum_test::TestServer;
+    use serde_json::json;
     use crate::app::create_app;
 
     #[tokio::test]
@@ -45,12 +46,48 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_ping_router() {
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let res = server.get("/ping").await;
+        assert_eq!(res.status_code(), StatusCode::OK);
+        assert_eq!(res.text(), "{\"message\":\"pong\"}");
+    }
+
+    #[tokio::test]
     async fn test_get_all_books_router() {
         let app = create_app().await;
         let server = TestServer::new(app).unwrap();
         let res = server.get("/books").await;
         assert_eq!(res.status_code(), StatusCode::OK);
         assert_eq!(res.text(), "[]");
+    }
+
+    #[tokio::test]
+    async fn test_get_create_new_book_with_success_router() {
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let res = server.post("/books")
+            .json(&json!({
+                "title": "Lord of the Rings",
+                "author": "Tolkien",
+                "pages": 2000,
+            })).await;
+        assert_eq!(res.status_code(), StatusCode::CREATED);
+        assert!(res.text().contains("\"title\":\"Lord of the Rings\""));
+    }
+
+    #[tokio::test]
+    async fn test_get_create_new_book_with_invalid_params_router() {
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let res = server.post("/books")
+            .json(&json!({
+                "title": "Lord of the Rings",
+                "author": "Tolkien"
+            })).await;
+        assert_eq!(res.status_code(), StatusCode::BAD_REQUEST);
+        assert!(res.text().contains("\"message\":\"Invalid params on request\""));
     }
 }
 
