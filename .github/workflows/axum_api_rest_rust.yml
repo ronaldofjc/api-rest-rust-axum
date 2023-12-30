@@ -1,8 +1,6 @@
-name: Rust Axum CI
+name: Rust Axum Continuous Integration
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
