@@ -165,4 +165,29 @@ mod tests {
         assert_eq!(res.status_code(), StatusCode::BAD_REQUEST);
         assert!(res.text().contains("\"message\":\"Invalid params on request\""));
     }
+
+    #[tokio::test]
+    async fn test_update_book_when_not_found_router() {
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let _ = server.post("/books")
+            .json(&json!({
+                "title": "Lord of the Rings",
+                "author": "Tolkien",
+                "pages": 2000,
+            })).await;
+
+        //let books = server.get("/books").await.json::<Vec<Book>>();
+        let url = "/books/b3676354-e02e-4f2d-b1dc-ff3162a74e5b".to_string();
+
+        let res = server.put(&*url)
+            .json(&json!({
+                "title": "Lord of the Rings 2",
+                "author": "Tolkien",
+                "pages": 2000,
+            })).await;
+
+        assert_eq!(res.status_code(), StatusCode::NOT_FOUND);
+        assert!(res.text().contains("\"message\":\"book not found\""));
+    }
 }
