@@ -177,7 +177,6 @@ mod tests {
                 "pages": 2000,
             })).await;
 
-        //let books = server.get("/books").await.json::<Vec<Book>>();
         let url = "/books/b3676354-e02e-4f2d-b1dc-ff3162a74e5b".to_string();
 
         let res = server.put(&*url)
