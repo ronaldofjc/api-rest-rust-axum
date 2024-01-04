@@ -140,4 +140,29 @@ mod tests {
         assert_eq!(res.status_code(), StatusCode::OK);
         assert!(res.text().contains("\"title\":\"Lord of the Rings 2\""));
     }
+
+    #[tokio::test]
+    async fn test_update_book_when_invalid_params_router() {
+        let app = create_app().await;
+        let server = TestServer::new(app).unwrap();
+        let _ = server.post("/books")
+            .json(&json!({
+                "title": "Lord of the Rings",
+                "author": "Tolkien",
+                "pages": 2000,
+            })).await;
+
+        let books = server.get("/books").await.json::<Vec<Book>>();
+        let id = books[0].id;
+        let url = "/books/".to_string() + &*id.to_string();
+
+        let res = server.put(&*url)
+            .json(&json!({
+                "title": "Lord of the Rings 2",
+                "author": "Tolkien"
+            })).await;
+
+        assert_eq!(res.status_code(), StatusCode::BAD_REQUEST);
+        assert!(res.text().contains("\"message\":\"Invalid params on request\""));
+    }
 }
